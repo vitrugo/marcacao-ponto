@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ponto - Sua Empresa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button.sair {
+            background-color: #f44336;
+        }
+        
+        button.sair:hover {
+            background-color: #d32f2f;
+        }
+        
+        button.pausa {
+            background-color: #ff9800;
+        }
+        
+        button.pausa:hover {
+            background-color: #e68a00;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .current-time {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status-trabalhando {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pausa {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-fora {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .alert {
+            padding: 10px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .success {
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Marcação de Ponto</h1>
+        
+        <div class="section">
+            <h2>Registrar Funcionário</h2>
+            <div class="form-group">
+                <label for="nomeFuncionario">Nome do Funcionário:</label>
+                <input type="text" id="nomeFuncionario" placeholder="Digite o nome completo">
+            </div>
+            <div class="form-group">
+                <label for="idFuncionario">ID do Funcionário:</label>
+                <input type="text" id="idFuncionario" placeholder="Digite um ID único">
+            </div>
+            <button onclick="cadastrarFuncionario()">Cadastrar Funcionário</button>
+            <div id="msgCadastro"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Marcar Ponto</h2>
+            <div class="form-group">
+                <label for="funcionario">Selecionar Funcionário:</label>
+                <select id="funcionario" onchange="atualizarStatus()">
+                    <option value="">Selecione um funcionário</option>
+                </select>
+            </div>
+            
+            <div class="current-time" id="currentTime"></div>
+            
+            <div id="status" class="status"></div>
+            
+            <button onclick="marcarEntrada()" id="btnEntrada">Registrar Entrada</button>
+            <button onclick="marcarPausa()" id="btnPausa" class="pausa">Iniciar Pausa</button>
+            <button onclick="marcarRetorno()" id="btnRetorno" class="pausa">Retornar da Pausa</button>
+            <button onclick="marcarSaida()" id="btnSaida" class="sair">Registrar Saída</button>
+            
+            <div id="msgPonto"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Registros de Ponto</h2>
+            <div class="form-group">
+                <label for="filtroFuncionario">Filtrar por Funcionário:</label>
+                <select id="filtroFuncionario" onchange="carregarRegistros()">
+                    <option value="">Todos os funcionários</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dataFiltro">Filtrar por Data:</label>
+                <input type="date" id="dataFiltro" onchange="carregarRegistros()">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Funcionário</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Pausas</th>
+                        <th>Total Trabalhado</th>
+                    </tr>
+                </thead>
+                <tbody id="registrosPonto">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let funcionarios = JSON.parse(localStorage.getItem('funcionarios')) || [];
+        let registrosPonto = JSON.parse(localStorage.getItem('registrosPonto')) || [];
+        
+        // Atualizar relógio em tempo real
+        function atualizarRelogio() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleDateString('pt-BR') + ' ' + 
+                now.toLocaleTimeString('pt-BR');
+            setTimeout(atualizarRelogio, 1000);
+        }
+        
+        // Carregar funcionários no select
+        function carregarFuncionarios() {
+            const selectFuncionario = document.getElementById('funcionario');
+            const selectFiltro = document.getElementById('filtroFuncionario');
+            
+            // Limpar selects
+            selectFuncionario.innerHTML = '<option value="">Selecione um funcionário</option>';
+            selectFiltro.innerHTML = '<option value="">Todos os funcionários</option>';
+            
+            // Adicionar funcionários
+            funcionarios.forEach(func => {
+                const option = document.createElement('option');
+                option.value = func.id;
+                option.textContent = func.nome;
+                selectFuncionario.appendChild(option);
+                
+                const optionFiltro = document.createElement('option');
+                optionFiltro.value = func.id;
+                optionFiltro.textContent = func.nome;
+                selectFiltro.appendChild(optionFiltro);
+            });
+        }
+        
+        // Cadastrar novo funcionário
+        function cadastrarFuncionario() {
+            const nome = document.getElementById('nomeFuncionario').value.trim();
+            const id = document.getElementById('idFuncionario').value.trim();
+            
+            if (!nome || !id) {
+                document.getElementById('msgCadastro').innerHTML = 
+                    '<div class="alert">Preencha todos os campos!</div>';
+                return;
+            }
+            
+            if (funcionarios.some(f => f.id === id)) {
+                document.getElementById('msgCadastro').innerHTML = 
+                    '<div class="alert">Já existe um funcionário com este ID!</div>';
+                return;
+            }
+            
+            funcionarios.push({ id, nome });
+            localStorage.setItem('funcionarios', JSON.stringify(funcionarios));
+            
+            document.getElementById('msgCadastro').innerHTML = 
+                '<div class="success">Funcionário cadastrado com sucesso!</div>';
+            document.getElementById('nomeFuncionario').value = '';
+            document.getElementById('idFuncionario').value = '';
+            
+            carregarFuncionarios();
+            
+            setTimeout(() => {
+                document.getElementById('msgCadastro').innerHTML = '';
+            }, 3000);
+        }
+        
+        // Atualizar status do funcionário selecionado
+        function atualizarStatus() {
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                document.getElementById('status').textContent = '';
+                return;
+            }
+            
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            const registrosHoje = registrosPonto.filter(r => 
+                r.funcionarioId === funcionarioId && r.data === hoje);
+            
+            let status = '';
+            let ultimoRegistro = null;
+            
+            if (registrosHoje.length > 0) {
+                ultimoRegistro = registrosHoje[registrosHoje.length - 1];
+                
+                if (ultimoRegistro.saida) {
+                    status = 'Fora de expediente';
+                    document.getElementById('status').className = 'status status-fora';
+                } else if (ultimoRegistro.retornoPausa) {
+                    status = 'Trabalhando';
+                    document.getElementById('status').className = 'status status-trabalhando';
+                } else if (ultimoRegistro.inicioPausa) {
+                    status = 'Em pausa';
+                    document.getElementById('status').className = 'status status-pausa';
+                } else if (ultimoRegistro.entrada) {
+                    status = 'Trabalhando';
+                    document.getElementById('status').className = 'status status-trabalhando';
+                }
+            } else {
+                status = 'Fora de expediente';
+                document.getElementById('status').className = 'status status-fora';
+            }
+            
+            document.getElementById('status').textContent = status;
+        }
+        
+        // Marcar entrada
+        function marcarEntrada() {
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
+            
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR');
+            
+            // Verificar se já existe registro de entrada hoje
+            const registroExistente = registrosPonto.find(r => 
+                r.funcionarioId === funcionarioId && r.data === data);
+            
+            if (registroExistente) {
+                alert('Este funcionário já registrou entrada hoje!');
+                return;
+            }
+            
+            // Criar novo registro
+            const novoRegistro = {
+                funcionarioId,
+                data,
+                entrada: hora,
+                saida: null,
+                pausas: []
+            };
+            
+            registrosPonto.push(novoRegistro);
+            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+            
+            document.getElementById('msgPonto').innerHTML = 
+                '<div class="success">Entrada registrada com sucesso!</div>';
+            
+            atualizarStatus();
+            carregarRegistros();
+            
+            setTimeout(() => {
+                document.getElementById('msgPonto').innerHTML = '';
+            }, 3000);
+        }
+        
+        // Marcar início de pausa
+        function marcarPausa() {
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
+            
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR');
+            
+            // Encontrar registro do dia
+            const registroIndex = registrosPonto.findIndex(r => 
+                r.funcionarioId === funcionarioId && r.data === data);
+            
+            if (registroIndex === -1) {
+                alert('Registro de entrada não encontrado para hoje!');
+                return;
+            }
+            
+            const registro = registrosPonto[registroIndex];
+            
+            // Verificar se já está em pausa
+            if (registro.pausas && registro.pausas.length > 0) {
+                const ultimaPausa = registro.pausas[registro.pausas.length - 1];
+                if (ultimaPausa.inicio && !ultimaPausa.fim) {
+                    alert('Já existe uma pausa em andamento!');
+                    return;
+                }
+            }
+            
+            // Adicionar nova pausa
+            if (!registro.pausas) {
+                registro.pausas = [];
+            }
+            
+            registro.pausas.push({
+                inicio: hora,
+                fim: null
+            });
+            
+            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+            
+            document.getElementById('msgPonto').innerHTML = 
+                '<div class="success">Pausa iniciada com sucesso!</div>';
+            
+            atualizarStatus();
+            carregarRegistros();
+            
+            setTimeout(() => {
+                document.getElementById('msgPonto').innerHTML = '';
+            }, 3000);
+        }
+        
+        // Marcar retorno da pausa
+        function marcarRetorno() {
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
+            
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR');
+            
+            // Encontrar registro do dia
+            const registroIndex = registrosPonto.findIndex(r => 
+                r.funcionarioId === funcionarioId && r.data === data);
+            
+            if (registroIndex === -1) {
+                alert('Registro de entrada não encontrado para hoje!');
+                return;
+            }
+            
+            const registro = registrosPonto[registroIndex];
+            
+            // Verificar se existe pausa em andamento
+            if (!registro.pausas || registro.pausas.length === 0) {
+                alert('Não há pausas em andamento!');
+                return;
+            }
+            
+            const ultimaPausa = registro.pausas[registro.pausas.length - 1];
+            
+            if (ultimaPausa.fim) {
+                alert('Não há pausas em andamento!');
+                return;
+            }
+            
+            // Finalizar a pausa
+            ultimaPausa.fim = hora;
+            
+            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+            
+            document.getElementById('msgPonto').innerHTML = 
+                '<div class="success">Retorno da pausa registrado com sucesso!</div>';
+            
+            atualizarStatus();
+            carregarRegistros();
+            
+            setTimeout(() => {
+                document.getElementById('msgPonto').innerHTML = '';
+            }, 3000);
+        }
+        
+        // Marcar saída
+        function marcarSaida() {
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
+            
+            const agora = new Date();
+            const data = agora.toLocaleDateString('pt-BR');
+            const hora = agora.toLocaleTimeString('pt-BR');
+            
+            // Encontrar registro do dia
+            const registroIndex = registrosPonto.findIndex(r => 
+                r.funcionarioId === funcionarioId && r.data === data);
+            
+            if (registroIndex === -1) {
+                alert('Registro de entrada não encontrado para hoje!');
+                return;
+            }
+            
+            const registro = registrosPonto[registroIndex];
+            
+            // Verificar se há pausa em andamento
+            if (registro.pausas && registro.pausas.length > 0) {
+                const ultimaPausa = registro.pausas[registro.pausas.length - 1];
+                if (ultimaPausa.inicio && !ultimaPausa.fim) {
+                    alert('Finalize a pausa antes de registrar a saída!');
+                    return;
+                }
+            }
+            
+            // Registrar saída
+            registro.saida = hora;
+            
+            localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+            
+            document.getElementById('msgPonto').innerHTML = 
+                '<div class="success">Saída registrada com sucesso!</div>';
+            
+            atualizarStatus();
+            carregarRegistros();
+            
+            setTimeout(() => {
+                document.getElementById('msgPonto').innerHTML = '';
+            }, 3000);
+        }
+        
+        // Calcular tempo total trabalhado
+        function calcularTempoTotal(entrada, saida, pausas) {
+            if (!entrada || !saida) return '-';
+            
+            // Converter para minutos
+            function timeToMinutes(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+            
+            const entradaMin = timeToMinutes(entrada);
+            const saidaMin = timeToMinutes(saida);
+            let totalMin = saidaMin - entradaMin;
+            
+            // Subtrair tempo de pausas
+            if (pausas && pausas.length > 0) {
+                pausas.forEach(pausa => {
+                    if (pausa.inicio && pausa.fim) {
+                        const inicioMin = timeToMinutes(pausa.inicio);
+                        const fimMin = timeToMinutes(pausa.fim);
+                        totalMin -= (fimMin - inicioMin);
+                    }
+                });
+            }
+            
+            // Converter de volta para formato HH:MM
+            const hours = Math.floor(totalMin / 60);
+            const minutes = totalMin % 60;
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+        
+        // Carregar registros de ponto
+        function carregarRegistros() {
+            const tabela = document.getElementById('registrosPonto');
+            const funcionarioId = document.getElementById('filtroFuncionario').value;
+            const dataFiltro = document.getElementById('dataFiltro').value;
+            
+            // Converter data para formato pt-BR, se necessário
+            let dataFiltroFormatada = '';
+            if (dataFiltro) {
+                const [year, month, day] = dataFiltro.split('-');
+                dataFiltroFormatada = `${day}/${month}/${year}`;
+            }
+            
+            // Filtrar registros
+            let registrosFiltrados = registrosPonto;
+            
+            if (funcionarioId) {
+                registrosFiltrados = registrosFiltrados.filter(r => r.funcionarioId === funcionarioId);
+            }
+            
+            if (dataFiltroFormatada) {
+                registrosFiltrados = registrosFiltrados.filter(r => r.data === dataFiltroFormatada);
+            }
+            
+            // Ordenar por data (mais recente primeiro)
+            registrosFiltrados.sort((a, b) => {
+                // Converter datas para o formato ISO para comparação
+                function toISODate(dateStr) {
+                    const [day, month, year] = dateStr.split('/');
+                    return `${year}-${month}-${day}`;
+                }
+                
+                return new Date(toISODate(b.data)) - new Date(toISODate(a.data));
+            });
+            
+            // Limpar tabela
+            tabela.innerHTML = '';
+            
+            // Adicionar registros à tabela
+            registrosFiltrados.forEach(registro => {
+                const funcionario = funcionarios.find(f => f.id === registro.funcionarioId);
+                const nomeFuncionario = funcionario ? funcionario.nome : 'Desconhecido';
+                
+                // Formatar pausas
+                let pausasFormatadas = '-';
+                if (registro.pausas && registro.pausas.length > 0) {
+                    pausasFormatadas = registro.pausas.map(p => {
+                        if (p.inicio && p.fim) {
+                            return `${p.inicio} - ${p.fim}`;
+                        } else if (p.inicio) {
+                            return `${p.inicio} - (em andamento)`;
+                        }
+                        return '';
+                    }).join('; ');
+                }
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${registro.data}</td>
+                    <td>${nomeFuncionario}</td>
+                    <td>${registro.entrada || '-'}</td>
+                    <td>${registro.saida || '-'}</td>
+                    <td>${pausasFormatadas}</td>
+                    <td>${calcularTempoTotal(registro.entrada, registro.saida, registro.pausas)}</td>
+                `;
+                
+                tabela.appendChild(tr);
+            });
+            
+            if (registrosFiltrados.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="6" style="text-align: center;">Nenhum registro encontrado</td>`;
+                tabela.appendChild(tr);
+            }
+        }
+        
+        // Inicializar a aplicação
+        function init() {
+            atualizarRelogio();
+            carregarFuncionarios();
+            carregarRegistros();
+            
+            // Verificar se é um novo dia e mostrar lembretes de registros pendentes
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            funcionarios.forEach(func => {
+                const registroHoje = registrosPonto.find(r => 
+                    r.funcionarioId === func.id && r.data === hoje);
+                
+                if (registroHoje && !registroHoje.saida) {
+                    console.log(`${func.nome} ainda não registrou saída hoje`);
+                }
+            });
+        }
+        
+        // Executar quando a página carregar
+        window.onload = init;
+    </script>
+</body>
+</html>
