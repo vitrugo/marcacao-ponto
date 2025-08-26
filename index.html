@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Ponto - Acesso Diferenciado</title>
+    <title>Sistema de Ponto com Backup</title>
     <style>
         * {
             box-sizing: border-box;
@@ -45,15 +45,6 @@
             font-size: 18px;
         }
         
-        .login-section {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -73,7 +64,7 @@
             border-left-color: #e74c3c;
         }
         
-        .card.funcionario {
+        .card.backup {
             border-left-color: #2ecc71;
         }
         
@@ -104,7 +95,8 @@
         input[type="text"],
         input[type="password"],
         input[type="date"],
-        select {
+        select,
+        textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -113,7 +105,7 @@
             transition: border-color 0.3s;
         }
         
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: #3498db;
             outline: none;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
@@ -153,6 +145,14 @@
         
         button.pausa:hover {
             background-color: #d35400;
+        }
+        
+        button.backup {
+            background-color: #2ecc71;
+        }
+        
+        button.backup:hover {
+            background-color: #27ae60;
         }
         
         .current-time {
@@ -269,23 +269,14 @@
             margin-bottom: 8px;
         }
         
-        .user-info {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #2c3e50;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        
-        .hidden {
-            display: none;
+        .backup-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
         
         @media (max-width: 768px) {
-            .dashboard {
+            .dashboard, .backup-area {
                 grid-template-columns: 1fr;
             }
             
@@ -297,169 +288,115 @@
                 width: 100%;
                 margin-bottom: 10px;
             }
-            
-            .user-info {
-                position: relative;
-                top: 0;
-                right: 0;
-                margin-bottom: 20px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Sistema de Ponto com Acesso Diferenciado</h1>
-            <p class="subtitle">Gestor visualiza tudo, funcionários marcam apenas seu ponto</p>
+            <h1>Sistema de Ponto Eletrônico com Backup</h1>
+            <p class="subtitle">Seus dados não se perdem ao trocar de computador</p>
         </header>
         
-        <div id="loginSection" class="login-section">
-            <h2>Acesso ao Sistema</h2>
-            <div class="form-group">
-                <label for="loginType">Tipo de Acesso:</label>
-                <select id="loginType">
-                    <option value="">Selecione o tipo de acesso</option>
-                    <option value="gestor">Gestor</option>
-                    <option value="funcionario">Funcionário</option>
-                </select>
-            </div>
-            
-            <div id="gestorLogin">
-                <div class="form-group">
-                    <label for="gestorUser">Usuário:</label>
-                    <input type="text" id="gestorUser" value="admin">
-                </div>
-                <div class="form-group">
-                    <label for="gestorPassword">Senha:</label>
-                    <input type="password" id="gestorPassword" value="admin123">
-                </div>
-            </div>
-            
-            <div id="funcionarioLogin">
-                <div class="form-group">
-                    <label for="funcionarioID">ID do Funcionário:</label>
-                    <input type="text" id="funcionarioID" placeholder="Digite seu ID">
-                </div>
-                <div class="form-group">
-                    <label for="funcionarioNome">Nome do Funcionário:</label>
-                    <input type="text" id="funcionarioNome" placeholder="Digite seu nome">
-                </div>
-            </div>
-            
-            <button onclick="fazerLogin()">Entrar no Sistema</button>
+        <div class="info-box">
+            <h3>Como funciona o backup:</h3>
+            <ul>
+                <li>Exporte seus dados para um arquivo de backup</li>
+                <li>Guarde este arquivo em local seguro (pendrive, e-mail, nuvem)</li>
+                <li>Ao usar em outro computador, importe o backup</li>
+                <li>Assim você não perde seus registros ao trocar de dispositivo</li>
+            </ul>
         </div>
         
-        <div id="gestorArea" class="hidden">
-            <div class="user-info">
-                Logado como: <strong>Gestor</strong> | <a href="#" onclick="sair()">Sair</a>
-            </div>
-            
-            <div class="info-box">
-                <h3>Área do Gestor - Controle Total</h3>
-                <p>Você tem acesso completo a todos os funcionários e registros de ponto.</p>
-            </div>
-            
-            <div class="dashboard">
-                <div class="card gestor">
-                    <h2><i>📋</i> Gerenciar Funcionários</h2>
-                    <div class="form-group">
-                        <label for="nomeFuncionario">Nome do Funcionário:</label>
-                        <input type="text" id="nomeFuncionario" placeholder="Digite o nome completo">
-                    </div>
-                    <div class="form-group">
-                        <label for="idFuncionario">ID do Funcionário:</label>
-                        <input type="text" id="idFuncionario" placeholder="Digite um ID único">
-                    </div>
-                    <button onclick="cadastrarFuncionario()">➕ Cadastrar Funcionário</button>
-                    <div id="msgCadastro"></div>
+        <div class="dashboard">
+            <div class="card gestor">
+                <h2><i>📋</i> Registrar Funcionário</h2>
+                <div class="form-group">
+                    <label for="nomeFuncionario">Nome do Funcionário:</label>
+                    <input type="text" id="nomeFuncionario" placeholder="Digite o nome completo">
                 </div>
-                
-                <div class="card">
-                    <h2><i>📊</i> Relatórios e Controle</h2>
-                    <p>Visualize todos os registros de ponto dos funcionários</p>
-                    <div class="form-group">
-                        <label for="filtroFuncionario">Filtrar por Funcionário:</label>
-                        <select id="filtroFuncionario" onchange="carregarRegistros()">
-                            <option value="">Todos os funcionários</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="dataFiltro">Filtrar por Data:</label>
-                        <input type="date" id="dataFiltro" onchange="carregarRegistros()">
-                    </div>
+                <div class="form-group">
+                    <label for="idFuncionario">ID do Funcionário:</label>
+                    <input type="text" id="idFuncionario" placeholder="Digite um ID único">
                 </div>
+                <button onclick="cadastrarFuncionario()">➕ Cadastrar Funcionário</button>
+                <div id="msgCadastro"></div>
             </div>
             
             <div class="card">
-                <h2><i>📝</i> Todos os Registros de Ponto</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Funcionário</th>
-                            <th>Entrada</th>
-                            <th>Saída</th>
-                            <th>Pausas</th>
-                            <th>Total Trabalhado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registrosPonto">
-                    </tbody>
-                </table>
+                <h2><i>⏱️</i> Marcar Ponto</h2>
+                <div class="form-group">
+                    <label for="funcionario">Selecionar Funcionário:</label>
+                    <select id="funcionario" onchange="atualizarStatus()">
+                        <option value="">Selecione um funcionário</option>
+                    </select>
+                </div>
+                
+                <div class="current-time" id="currentTime"></div>
+                
+                <div id="status" class="status"></div>
+                
+                <div class="actions">
+                    <button onclick="marcarEntrada()" id="btnEntrada">✅ Registrar Entrada</button>
+                    <button onclick="marcarPausa()" id="btnPausa" class="pausa">⏸️ Iniciar Pausa</button>
+                    <button onclick="marcarRetorno()" id="btnRetorno" class="pausa">▶️ Retornar da Pausa</button>
+                    <button onclick="marcarSaida()" id="btnSaida" class="sair">🚪 Registrar Saída</button>
+                </div>
+                
+                <div id="msgPonto"></div>
             </div>
         </div>
         
-        <div id="funcionarioArea" class="hidden">
-            <div class="user-info">
-                Logado como: <strong><span id="nomeFuncionarioLogado">Funcionário</span></strong> | <a href="#" onclick="sair()">Sair</a>
-            </div>
-            
-            <div class="info-box">
-                <h3>Área do Funcionário - Marcação de Ponto</h3>
-                <p>Você só pode marcar seu próprio ponto. O gestor terá acesso aos registros.</p>
-            </div>
-            
-            <div class="dashboard">
-                <div class="card funcionario">
-                    <h2><i>⏱️</i> Marcar Ponto</h2>
-                    <div class="current-time" id="currentTime"></div>
-                    
-                    <div id="status" class="status"></div>
-                    
-                    <div class="actions">
-                        <button onclick="marcarEntrada()" id="btnEntrada">✅ Registrar Entrada</button>
-                        <button onclick="marcarPausa()" id="btnPausa" class="pausa">⏸️ Iniciar Pausa</button>
-                        <button onclick="marcarRetorno()" id="btnRetorno" class="pausa">▶️ Retornar da Pausa</button>
-                        <button onclick="marcarSaida()" id="btnSaida" class="sair">🚪 Registrar Saída</button>
-                    </div>
-                    
-                    <div id="msgPonto"></div>
+        <div class="card backup">
+            <h2><i>💾</i> Sistema de Backup</h2>
+            <div class="backup-area">
+                <div>
+                    <h3>Exportar Dados</h3>
+                    <p>Exporte todos os dados para um arquivo de backup.</p>
+                    <button onclick="exportarDados()" class="backup">📤 Exportar Dados</button>
+                    <div id="msgExport"></div>
                 </div>
                 
-                <div class="card">
-                    <h2><i>📊</i> Meus Registros</h2>
-                    <p>Seus registros de ponto dos últimos dias</p>
+                <div>
+                    <h3>Importar Dados</h3>
+                    <p>Importe um backup anterior para restaurar seus dados.</p>
                     <div class="form-group">
-                        <label for="dataFiltroFunc">Filtrar por Data:</label>
-                        <input type="date" id="dataFiltroFunc" onchange="carregarMeusRegistros()">
+                        <label for="arquivoBackup">Selecionar arquivo de backup:</label>
+                        <input type="file" id="arquivoBackup" accept=".json">
                     </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Entrada</th>
-                                <th>Saída</th>
-                                <th>Pausas</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="meusRegistros">
-                        </tbody>
-                    </table>
+                    <button onclick="importarDados()" class="backup">📥 Importar Dados</button>
+                    <div id="msgImport"></div>
                 </div>
             </div>
+        </div>
+        
+        <div class="card">
+            <h2><i>📊</i> Registros de Ponto</h2>
+            <div class="form-group">
+                <label for="filtroFuncionario">Filtrar por Funcionário:</label>
+                <select id="filtroFuncionario" onchange="carregarRegistros()">
+                    <option value="">Todos os funcionários</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dataFiltro">Filtrar por Data:</label>
+                <input type="date" id="dataFiltro" onchange="carregarRegistros()">
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Funcionário</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Pausas</th>
+                        <th>Total Trabalhado</th>
+                    </tr>
+                </thead>
+                <tbody id="registrosPonto">
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -467,106 +404,6 @@
         // Variáveis globais
         let funcionarios = JSON.parse(localStorage.getItem('funcionarios')) || [];
         let registrosPonto = JSON.parse(localStorage.getItem('registrosPonto')) || [];
-        let usuarioLogado = null;
-        let tipoUsuario = null;
-        
-        // Inicializar a aplicação
-        function init() {
-            atualizarRelogio();
-            carregarFuncionarios();
-            alternarCamposLogin();
-            
-            // Verificar se já está logado
-            const savedUser = localStorage.getItem('usuarioLogado');
-            const savedType = localStorage.getItem('tipoUsuario');
-            
-            if (savedUser && savedType) {
-                usuarioLogado = JSON.parse(savedUser);
-                tipoUsuario = savedType;
-                entrarNoSistema();
-            }
-        }
-        
-        // Alternar campos de login baseado no tipo selecionado
-        function alternarCamposLogin() {
-            const loginType = document.getElementById('loginType').value;
-            document.getElementById('gestorLogin').style.display = loginType === 'gestor' ? 'block' : 'none';
-            document.getElementById('funcionarioLogin').style.display = loginType === 'funcionario' ? 'block' : 'none';
-        }
-        
-        // Fazer login no sistema
-        function fazerLogin() {
-            const loginType = document.getElementById('loginType').value;
-            
-            if (!loginType) {
-                alert('Selecione o tipo de acesso!');
-                return;
-            }
-            
-            if (loginType === 'gestor') {
-                const user = document.getElementById('gestorUser').value;
-                const password = document.getElementById('gestorPassword').value;
-                
-                if (user === 'admin' && password === 'admin123') {
-                    usuarioLogado = { nome: 'Gestor', id: 'admin' };
-                    tipoUsuario = 'gestor';
-                    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
-                    localStorage.setItem('tipoUsuario', tipoUsuario);
-                    entrarNoSistema();
-                } else {
-                    alert('Usuário ou senha incorretos!');
-                }
-            } else {
-                const id = document.getElementById('funcionarioID').value;
-                const nome = document.getElementById('funcionarioNome').value;
-                
-                if (!id || !nome) {
-                    alert('Preencha todos os campos!');
-                    return;
-                }
-                
-                // Verificar se funcionário existe
-                const funcionario = funcionarios.find(f => f.id === id && f.nome === nome);
-                
-                if (!funcionario) {
-                    alert('Funcionário não encontrado! Verifique o ID e nome.');
-                    return;
-                }
-                
-                usuarioLogado = funcionario;
-                tipoUsuario = 'funcionario';
-                localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
-                localStorage.setItem('tipoUsuario', tipoUsuario);
-                entrarNoSistema();
-            }
-        }
-        
-        // Entrar no sistema após login
-        function entrarNoSistema() {
-            document.getElementById('loginSection').classList.add('hidden');
-            
-            if (tipoUsuario === 'gestor') {
-                document.getElementById('gestorArea').classList.remove('hidden');
-                carregarRegistros();
-            } else {
-                document.getElementById('funcionarioArea').classList.remove('hidden');
-                document.getElementById('nomeFuncionarioLogado').textContent = usuarioLogado.nome;
-                atualizarStatus();
-                carregarMeusRegistros();
-            }
-        }
-        
-        // Sair do sistema
-        function sair() {
-            usuarioLogado = null;
-            tipoUsuario = null;
-            localStorage.removeItem('usuarioLogado');
-            localStorage.removeItem('tipoUsuario');
-            
-            document.getElementById('gestorArea').classList.add('hidden');
-            document.getElementById('funcionarioArea').classList.add('hidden');
-            document.getElementById('loginSection').classList.remove('hidden');
-        }
         
         // Atualizar relógio em tempo real
         function atualizarRelogio() {
@@ -579,13 +416,20 @@
         
         // Carregar funcionários no select
         function carregarFuncionarios() {
+            const selectFuncionario = document.getElementById('funcionario');
             const selectFiltro = document.getElementById('filtroFuncionario');
             
-            // Limpar select
+            // Limpar selects
+            selectFuncionario.innerHTML = '<option value="">Selecione um funcionário</option>';
             selectFiltro.innerHTML = '<option value="">Todos os funcionários</option>';
             
             // Adicionar funcionários
             funcionarios.forEach(func => {
+                const option = document.createElement('option');
+                option.value = func.id;
+                option.textContent = `${func.nome} (${func.id})`;
+                selectFuncionario.appendChild(option);
+                
                 const optionFiltro = document.createElement('option');
                 optionFiltro.value = func.id;
                 optionFiltro.textContent = `${func.nome} (${func.id})`;
@@ -627,17 +471,21 @@
         
         // Atualizar status do funcionário selecionado
         function atualizarStatus() {
-            if (tipoUsuario !== 'funcionario') return;
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                document.getElementById('status').textContent = '';
+                return;
+            }
             
-            const funcionarioId = usuarioLogado.id;
             const hoje = new Date().toLocaleDateString('pt-BR');
             const registrosHoje = registrosPonto.filter(r => 
                 r.funcionarioId === funcionarioId && r.data === hoje);
             
             let status = '';
+            let ultimoRegistro = null;
             
             if (registrosHoje.length > 0) {
-                const ultimoRegistro = registrosHoje[registrosHoje.length - 1];
+                ultimoRegistro = registrosHoje[registrosHoje.length - 1];
                 
                 if (ultimoRegistro.saida) {
                     status = 'Fora de expediente';
@@ -662,9 +510,12 @@
         
         // Marcar entrada
         function marcarEntrada() {
-            if (tipoUsuario !== 'funcionario') return;
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
             
-            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -674,7 +525,7 @@
                 r.funcionarioId === funcionarioId && r.data === data);
             
             if (registroExistente) {
-                alert('Você já registrou entrada hoje!');
+                alert('Este funcionário já registrou entrada hoje!');
                 return;
             }
             
@@ -694,7 +545,7 @@
                 '<div class="success">Entrada registrada com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarMeusRegistros();
+            carregarRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -703,9 +554,12 @@
         
         // Marcar início de pausa
         function marcarPausa() {
-            if (tipoUsuario !== 'funcionario') return;
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
             
-            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -746,7 +600,7 @@
                 '<div class="success">Pausa iniciada com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarMeusRegistros();
+            carregarRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -755,9 +609,12 @@
         
         // Marcar retorno da pausa
         function marcarRetorno() {
-            if (tipoUsuario !== 'funcionario') return;
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
             
-            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -795,7 +652,7 @@
                 '<div class="success">Retorno da pausa registrado com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarMeusRegistros();
+            carregarRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -804,9 +661,12 @@
         
         // Marcar saída
         function marcarSaida() {
-            if (tipoUsuario !== 'funcionario') return;
+            const funcionarioId = document.getElementById('funcionario').value;
+            if (!funcionarioId) {
+                alert('Selecione um funcionário!');
+                return;
+            }
             
-            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -840,7 +700,7 @@
                 '<div class="success">Saída registrada com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarMeusRegistros();
+            carregarRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -879,7 +739,7 @@
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
         }
         
-        // Carregar registros de ponto (para gestor)
+        // Carregar registros de ponto
         function carregarRegistros() {
             const tabela = document.getElementById('registrosPonto');
             const funcionarioId = document.getElementById('filtroFuncionario').value;
@@ -955,78 +815,125 @@
             }
         }
         
-        // Carregar meus registros (para funcionário)
-        function carregarMeusRegistros() {
-            if (tipoUsuario !== 'funcionario') return;
+        // Exportar dados para backup
+        function exportarDados() {
+            const dados = {
+                funcionarios: funcionarios,
+                registrosPonto: registrosPonto,
+                dataExportacao: new Date().toISOString()
+            };
             
-            const tabela = document.getElementById('meusRegistros');
-            const dataFiltro = document.getElementById('dataFiltroFunc').value;
-            const funcionarioId = usuarioLogado.id;
+            const dadosJSON = JSON.stringify(dados);
+            const blob = new Blob([dadosJSON], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
             
-            // Converter data para formato pt-BR, se necessário
-            let dataFiltroFormatada = '';
-            if (dataFiltro) {
-                const parts = dataFiltro.split('-');
-                dataFiltroFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup-ponto-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Limpar
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            document.getElementById('msgExport').innerHTML = 
+                '<div class="success">Backup exportado com sucesso!</div>';
+            
+            setTimeout(() => {
+                document.getElementById('msgExport').innerHTML = '';
+            }, 3000);
+        }
+        
+        // Importar dados de backup
+        function importarDados() {
+            const fileInput = document.getElementById('arquivoBackup');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Selecione um arquivo de backup!');
+                return;
             }
             
-            // Filtrar registros
-            let registrosFiltrados = registrosPonto.filter(r => r.funcionarioId === funcionarioId);
+            const reader = new FileReader();
             
-            if (dataFiltroFormatada) {
-                registrosFiltrados = registrosFiltrados.filter(r => r.data === dataFiltroFormatada);
-            }
-            
-            // Ordenar por data (mais recente primeiro)
-            registrosFiltrados.sort((a, b) => {
-                function toISODate(dateStr) {
-                    const [day, month, year] = dateStr.split('/');
-                    return `${year}-${month}-${day}`;
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    
+                    if (!dados.funcionarios || !dados.registrosPonto) {
+                        throw new Error('Formato de arquivo inválido');
+                    }
+                    
+                    // Verificar se quer substituir ou adicionar aos dados existentes
+                    if (confirm('Deseja substituir todos os dados atuais pelo backup? Se cancelar, os dados do backup serão adicionados aos existentes.')) {
+                        // Substituir dados
+                        funcionarios = dados.funcionarios;
+                        registrosPonto = dados.registrosPonto;
+                    } else {
+                        // Adicionar dados (evitando duplicatas)
+                        dados.funcionarios.forEach(novoFunc => {
+                            if (!funcionarios.some(f => f.id === novoFunc.id)) {
+                                funcionarios.push(novoFunc);
+                            }
+                        });
+                        
+                        dados.registrosPonto.forEach(novoRegistro => {
+                            // Verificar se registro já existe
+                            const existe = registrosPonto.some(r => 
+                                r.funcionarioId === novoRegistro.funcionarioId && 
+                                r.data === novoRegistro.data && 
+                                r.entrada === novoRegistro.entrada
+                            );
+                            
+                            if (!existe) {
+                                registrosPonto.push(novoRegistro);
+                            }
+                        });
+                    }
+                    
+                    // Salvar no localStorage
+                    localStorage.setItem('funcionarios', JSON.stringify(funcionarios));
+                    localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
+                    
+                    // Recarregar a interface
+                    carregarFuncionarios();
+                    carregarRegistros();
+                    
+                    document.getElementById('msgImport').innerHTML = 
+                        '<div class="success">Backup importado com sucesso!</div>';
+                    
+                    // Limpar o input de arquivo
+                    fileInput.value = '';
+                    
+                    setTimeout(() => {
+                        document.getElementById('msgImport').innerHTML = '';
+                    }, 3000);
+                    
+                } catch (error) {
+                    document.getElementById('msgImport').innerHTML = 
+                        '<div class="alert">Erro ao importar backup: ' + error.message + '</div>';
+                    
+                    setTimeout(() => {
+                        document.getElementById('msgImport').innerHTML = '';
+                    }, 3000);
                 }
-                
-                return new Date(toISODate(b.data)) - new Date(toISODate(a.data));
-            });
+            };
             
-            // Limpar tabela
-            tabela.innerHTML = '';
-            
-            // Adicionar registros à tabela
-            registrosFiltrados.forEach(registro => {
-                // Formatar pausas
-                let pausasFormatadas = '-';
-                if (registro.pausas && registro.pausas.length > 0) {
-                    pausasFormatadas = registro.pausas.map(p => {
-                        if (p.inicio && p.fim) {
-                            return `${p.inicio}-${p.fim}`;
-                        } else if (p.inicio) {
-                            return `${p.inicio}-(em andamento)`;
-                        }
-                        return '';
-                    }).join('; ');
-                }
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${registro.data}</td>
-                    <td>${registro.entrada || '-'}</td>
-                    <td>${registro.saida || '-'}</td>
-                    <td>${pausasFormatadas}</td>
-                    <td>${calcularTempoTotal(registro.entrada, registro.saida, registro.pausas)}</td>
-                `;
-                
-                tabela.appendChild(tr);
-            });
-            
-            if (registrosFiltrados.length === 0) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="5" style="text-align: center;">Nenhum registro encontrado</td>`;
-                tabela.appendChild(tr);
-            }
+            reader.readAsText(file);
+        }
+        
+        // Inicializar a aplicação
+        function init() {
+            atualizarRelogio();
+            carregarFuncionarios();
+            carregarRegistros();
         }
         
         // Executar quando a página carregar
         window.onload = init;
-        document.getElementById('loginType').addEventListener('change', alternarCamposLogin);
     </script>
 </body>
 </html>
