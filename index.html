@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Ponto - Sua Empresa</title>
+    <title>Sistema de Ponto - Acesso Diferenciado</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,29 +13,81 @@
         }
         
         body {
-            background-color: #f5f5f5;
+            background-color: #f0f2f5;
             padding: 20px;
+            color: #333;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        
+        .login-section {
+            max-width: 400px;
+            margin: 0 auto;
             padding: 20px;
+            background: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        h1, h2 {
-            color: #333;
-            margin-bottom: 20px;
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
         
-        .section {
-            margin-bottom: 30px;
+        .card {
+            background: white;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .card.gestor {
+            border-left-color: #e74c3c;
+        }
+        
+        .card.funcionario {
+            border-left-color: #2ecc71;
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            color: #3498db;
         }
         
         .form-group {
@@ -45,184 +97,369 @@
         label {
             display: block;
             margin-bottom: 5px;
-            font-weight: bold;
+            font-weight: 600;
+            color: #2c3e50;
         }
         
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="date"],
+        select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
         
         button {
-            background-color: #4CAF50;
+            background-color: #3498db;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 12px 18px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
             margin-right: 10px;
             margin-top: 5px;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         
         button:hover {
-            background-color: #45a049;
+            background-color: #2980b9;
         }
         
         button.sair {
-            background-color: #f44336;
+            background-color: #e74c3c;
         }
         
         button.sair:hover {
-            background-color: #d32f2f;
+            background-color: #c0392b;
         }
         
         button.pausa {
-            background-color: #ff9800;
+            background-color: #f39c12;
         }
         
         button.pausa:hover {
-            background-color: #e68a00;
+            background-color: #d35400;
+        }
+        
+        .current-time {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #2c3e50;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eaeaea;
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .status-trabalhando {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-pausa {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .status-fora {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert {
+            padding: 12px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success {
+            padding: 12px;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #c3e6cb;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         
         table, th, td {
             border: 1px solid #ddd;
         }
         
-        th, td {
-            padding: 12px;
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
             text-align: left;
         }
         
-        th {
-            background-color: #f2f2f2;
+        td {
+            padding: 12px 15px;
         }
         
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #f8f9fa;
         }
         
-        .current-time {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #333;
+        tr:hover {
+            background-color: #e9f7fe;
         }
         
-        .status {
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-            font-weight: bold;
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
         }
         
-        .status-trabalhando {
-            background-color: #d4edda;
-            color: #155724;
+        .info-box {
+            background: #e9f7fe;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
         }
         
-        .status-pausa {
-            background-color: #fff3cd;
-            color: #856404;
+        .info-box h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
         }
         
-        .status-fora {
-            background-color: #f8d7da;
-            color: #721c24;
+        .info-box ul {
+            padding-left: 20px;
         }
         
-        .alert {
-            padding: 10px;
-            background-color: #f8d7da;
-            color: #721c24;
-            border-radius: 4px;
-            margin: 10px 0;
+        .info-box li {
+            margin-bottom: 8px;
         }
         
-        .success {
-            padding: 10px;
-            background-color: #d4edda;
-            color: #155724;
-            border-radius: 4px;
-            margin: 10px 0;
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .user-info {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Sistema de Marcação de Ponto</h1>
+        <header>
+            <h1>Sistema de Ponto com Acesso Diferenciado</h1>
+            <p class="subtitle">Gestor visualiza tudo, funcionários marcam apenas seu ponto</p>
+        </header>
         
-        <div class="section">
-            <h2>Registrar Funcionário</h2>
+        <div id="loginSection" class="login-section">
+            <h2>Acesso ao Sistema</h2>
             <div class="form-group">
-                <label for="nomeFuncionario">Nome do Funcionário:</label>
-                <input type="text" id="nomeFuncionario" placeholder="Digite o nome completo">
-            </div>
-            <div class="form-group">
-                <label for="idFuncionario">ID do Funcionário:</label>
-                <input type="text" id="idFuncionario" placeholder="Digite um ID único">
-            </div>
-            <button onclick="cadastrarFuncionario()">Cadastrar Funcionário</button>
-            <div id="msgCadastro"></div>
-        </div>
-        
-        <div class="section">
-            <h2>Marcar Ponto</h2>
-            <div class="form-group">
-                <label for="funcionario">Selecionar Funcionário:</label>
-                <select id="funcionario" onchange="atualizarStatus()">
-                    <option value="">Selecione um funcionário</option>
+                <label for="loginType">Tipo de Acesso:</label>
+                <select id="loginType">
+                    <option value="">Selecione o tipo de acesso</option>
+                    <option value="gestor">Gestor</option>
+                    <option value="funcionario">Funcionário</option>
                 </select>
             </div>
             
-            <div class="current-time" id="currentTime"></div>
+            <div id="gestorLogin">
+                <div class="form-group">
+                    <label for="gestorUser">Usuário:</label>
+                    <input type="text" id="gestorUser" value="admin">
+                </div>
+                <div class="form-group">
+                    <label for="gestorPassword">Senha:</label>
+                    <input type="password" id="gestorPassword" value="admin123">
+                </div>
+            </div>
             
-            <div id="status" class="status"></div>
+            <div id="funcionarioLogin">
+                <div class="form-group">
+                    <label for="funcionarioID">ID do Funcionário:</label>
+                    <input type="text" id="funcionarioID" placeholder="Digite seu ID">
+                </div>
+                <div class="form-group">
+                    <label for="funcionarioNome">Nome do Funcionário:</label>
+                    <input type="text" id="funcionarioNome" placeholder="Digite seu nome">
+                </div>
+            </div>
             
-            <button onclick="marcarEntrada()" id="btnEntrada">Registrar Entrada</button>
-            <button onclick="marcarPausa()" id="btnPausa" class="pausa">Iniciar Pausa</button>
-            <button onclick="marcarRetorno()" id="btnRetorno" class="pausa">Retornar da Pausa</button>
-            <button onclick="marcarSaida()" id="btnSaida" class="sair">Registrar Saída</button>
-            
-            <div id="msgPonto"></div>
+            <button onclick="fazerLogin()">Entrar no Sistema</button>
         </div>
         
-        <div class="section">
-            <h2>Registros de Ponto</h2>
-            <div class="form-group">
-                <label for="filtroFuncionario">Filtrar por Funcionário:</label>
-                <select id="filtroFuncionario" onchange="carregarRegistros()">
-                    <option value="">Todos os funcionários</option>
-                </select>
+        <div id="gestorArea" class="hidden">
+            <div class="user-info">
+                Logado como: <strong>Gestor</strong> | <a href="#" onclick="sair()">Sair</a>
             </div>
-            <div class="form-group">
-                <label for="dataFiltro">Filtrar por Data:</label>
-                <input type="date" id="dataFiltro" onchange="carregarRegistros()">
+            
+            <div class="info-box">
+                <h3>Área do Gestor - Controle Total</h3>
+                <p>Você tem acesso completo a todos os funcionários e registros de ponto.</p>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Funcionário</th>
-                        <th>Entrada</th>
-                        <th>Saída</th>
-                        <th>Pausas</th>
-                        <th>Total Trabalhado</th>
-                    </tr>
-                </thead>
-                <tbody id="registrosPonto">
-                </tbody>
-            </table>
+            
+            <div class="dashboard">
+                <div class="card gestor">
+                    <h2><i>📋</i> Gerenciar Funcionários</h2>
+                    <div class="form-group">
+                        <label for="nomeFuncionario">Nome do Funcionário:</label>
+                        <input type="text" id="nomeFuncionario" placeholder="Digite o nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="idFuncionario">ID do Funcionário:</label>
+                        <input type="text" id="idFuncionario" placeholder="Digite um ID único">
+                    </div>
+                    <button onclick="cadastrarFuncionario()">➕ Cadastrar Funcionário</button>
+                    <div id="msgCadastro"></div>
+                </div>
+                
+                <div class="card">
+                    <h2><i>📊</i> Relatórios e Controle</h2>
+                    <p>Visualize todos os registros de ponto dos funcionários</p>
+                    <div class="form-group">
+                        <label for="filtroFuncionario">Filtrar por Funcionário:</label>
+                        <select id="filtroFuncionario" onchange="carregarRegistros()">
+                            <option value="">Todos os funcionários</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataFiltro">Filtrar por Data:</label>
+                        <input type="date" id="dataFiltro" onchange="carregarRegistros()">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i>📝</i> Todos os Registros de Ponto</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Funcionário</th>
+                            <th>Entrada</th>
+                            <th>Saída</th>
+                            <th>Pausas</th>
+                            <th>Total Trabalhado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrosPonto">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="funcionarioArea" class="hidden">
+            <div class="user-info">
+                Logado como: <strong><span id="nomeFuncionarioLogado">Funcionário</span></strong> | <a href="#" onclick="sair()">Sair</a>
+            </div>
+            
+            <div class="info-box">
+                <h3>Área do Funcionário - Marcação de Ponto</h3>
+                <p>Você só pode marcar seu próprio ponto. O gestor terá acesso aos registros.</p>
+            </div>
+            
+            <div class="dashboard">
+                <div class="card funcionario">
+                    <h2><i>⏱️</i> Marcar Ponto</h2>
+                    <div class="current-time" id="currentTime"></div>
+                    
+                    <div id="status" class="status"></div>
+                    
+                    <div class="actions">
+                        <button onclick="marcarEntrada()" id="btnEntrada">✅ Registrar Entrada</button>
+                        <button onclick="marcarPausa()" id="btnPausa" class="pausa">⏸️ Iniciar Pausa</button>
+                        <button onclick="marcarRetorno()" id="btnRetorno" class="pausa">▶️ Retornar da Pausa</button>
+                        <button onclick="marcarSaida()" id="btnSaida" class="sair">🚪 Registrar Saída</button>
+                    </div>
+                    
+                    <div id="msgPonto"></div>
+                </div>
+                
+                <div class="card">
+                    <h2><i>📊</i> Meus Registros</h2>
+                    <p>Seus registros de ponto dos últimos dias</p>
+                    <div class="form-group">
+                        <label for="dataFiltroFunc">Filtrar por Data:</label>
+                        <input type="date" id="dataFiltroFunc" onchange="carregarMeusRegistros()">
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Entrada</th>
+                                <th>Saída</th>
+                                <th>Pausas</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meusRegistros">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -230,35 +467,128 @@
         // Variáveis globais
         let funcionarios = JSON.parse(localStorage.getItem('funcionarios')) || [];
         let registrosPonto = JSON.parse(localStorage.getItem('registrosPonto')) || [];
+        let usuarioLogado = null;
+        let tipoUsuario = null;
+        
+        // Inicializar a aplicação
+        function init() {
+            atualizarRelogio();
+            carregarFuncionarios();
+            alternarCamposLogin();
+            
+            // Verificar se já está logado
+            const savedUser = localStorage.getItem('usuarioLogado');
+            const savedType = localStorage.getItem('tipoUsuario');
+            
+            if (savedUser && savedType) {
+                usuarioLogado = JSON.parse(savedUser);
+                tipoUsuario = savedType;
+                entrarNoSistema();
+            }
+        }
+        
+        // Alternar campos de login baseado no tipo selecionado
+        function alternarCamposLogin() {
+            const loginType = document.getElementById('loginType').value;
+            document.getElementById('gestorLogin').style.display = loginType === 'gestor' ? 'block' : 'none';
+            document.getElementById('funcionarioLogin').style.display = loginType === 'funcionario' ? 'block' : 'none';
+        }
+        
+        // Fazer login no sistema
+        function fazerLogin() {
+            const loginType = document.getElementById('loginType').value;
+            
+            if (!loginType) {
+                alert('Selecione o tipo de acesso!');
+                return;
+            }
+            
+            if (loginType === 'gestor') {
+                const user = document.getElementById('gestorUser').value;
+                const password = document.getElementById('gestorPassword').value;
+                
+                if (user === 'admin' && password === 'admin123') {
+                    usuarioLogado = { nome: 'Gestor', id: 'admin' };
+                    tipoUsuario = 'gestor';
+                    localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
+                    localStorage.setItem('tipoUsuario', tipoUsuario);
+                    entrarNoSistema();
+                } else {
+                    alert('Usuário ou senha incorretos!');
+                }
+            } else {
+                const id = document.getElementById('funcionarioID').value;
+                const nome = document.getElementById('funcionarioNome').value;
+                
+                if (!id || !nome) {
+                    alert('Preencha todos os campos!');
+                    return;
+                }
+                
+                // Verificar se funcionário existe
+                const funcionario = funcionarios.find(f => f.id === id && f.nome === nome);
+                
+                if (!funcionario) {
+                    alert('Funcionário não encontrado! Verifique o ID e nome.');
+                    return;
+                }
+                
+                usuarioLogado = funcionario;
+                tipoUsuario = 'funcionario';
+                localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
+                localStorage.setItem('tipoUsuario', tipoUsuario);
+                entrarNoSistema();
+            }
+        }
+        
+        // Entrar no sistema após login
+        function entrarNoSistema() {
+            document.getElementById('loginSection').classList.add('hidden');
+            
+            if (tipoUsuario === 'gestor') {
+                document.getElementById('gestorArea').classList.remove('hidden');
+                carregarRegistros();
+            } else {
+                document.getElementById('funcionarioArea').classList.remove('hidden');
+                document.getElementById('nomeFuncionarioLogado').textContent = usuarioLogado.nome;
+                atualizarStatus();
+                carregarMeusRegistros();
+            }
+        }
+        
+        // Sair do sistema
+        function sair() {
+            usuarioLogado = null;
+            tipoUsuario = null;
+            localStorage.removeItem('usuarioLogado');
+            localStorage.removeItem('tipoUsuario');
+            
+            document.getElementById('gestorArea').classList.add('hidden');
+            document.getElementById('funcionarioArea').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+        }
         
         // Atualizar relógio em tempo real
         function atualizarRelogio() {
             const now = new Date();
             document.getElementById('currentTime').textContent = 
-                now.toLocaleDateString('pt-BR') + ' ' + 
+                now.toLocaleDateString('pt-BR') + ' | ' + 
                 now.toLocaleTimeString('pt-BR');
             setTimeout(atualizarRelogio, 1000);
         }
         
         // Carregar funcionários no select
         function carregarFuncionarios() {
-            const selectFuncionario = document.getElementById('funcionario');
             const selectFiltro = document.getElementById('filtroFuncionario');
             
-            // Limpar selects
-            selectFuncionario.innerHTML = '<option value="">Selecione um funcionário</option>';
+            // Limpar select
             selectFiltro.innerHTML = '<option value="">Todos os funcionários</option>';
             
             // Adicionar funcionários
             funcionarios.forEach(func => {
-                const option = document.createElement('option');
-                option.value = func.id;
-                option.textContent = func.nome;
-                selectFuncionario.appendChild(option);
-                
                 const optionFiltro = document.createElement('option');
                 optionFiltro.value = func.id;
-                optionFiltro.textContent = func.nome;
+                optionFiltro.textContent = `${func.nome} (${func.id})`;
                 selectFiltro.appendChild(optionFiltro);
             });
         }
@@ -297,21 +627,17 @@
         
         // Atualizar status do funcionário selecionado
         function atualizarStatus() {
-            const funcionarioId = document.getElementById('funcionario').value;
-            if (!funcionarioId) {
-                document.getElementById('status').textContent = '';
-                return;
-            }
+            if (tipoUsuario !== 'funcionario') return;
             
+            const funcionarioId = usuarioLogado.id;
             const hoje = new Date().toLocaleDateString('pt-BR');
             const registrosHoje = registrosPonto.filter(r => 
                 r.funcionarioId === funcionarioId && r.data === hoje);
             
             let status = '';
-            let ultimoRegistro = null;
             
             if (registrosHoje.length > 0) {
-                ultimoRegistro = registrosHoje[registrosHoje.length - 1];
+                const ultimoRegistro = registrosHoje[registrosHoje.length - 1];
                 
                 if (ultimoRegistro.saida) {
                     status = 'Fora de expediente';
@@ -336,12 +662,9 @@
         
         // Marcar entrada
         function marcarEntrada() {
-            const funcionarioId = document.getElementById('funcionario').value;
-            if (!funcionarioId) {
-                alert('Selecione um funcionário!');
-                return;
-            }
+            if (tipoUsuario !== 'funcionario') return;
             
+            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -351,7 +674,7 @@
                 r.funcionarioId === funcionarioId && r.data === data);
             
             if (registroExistente) {
-                alert('Este funcionário já registrou entrada hoje!');
+                alert('Você já registrou entrada hoje!');
                 return;
             }
             
@@ -368,10 +691,10 @@
             localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
             
             document.getElementById('msgPonto').innerHTML = 
-                '<div class="success">Entrada registrada com sucesso!</div>';
+                '<div class="success">Entrada registrada com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarRegistros();
+            carregarMeusRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -380,12 +703,9 @@
         
         // Marcar início de pausa
         function marcarPausa() {
-            const funcionarioId = document.getElementById('funcionario').value;
-            if (!funcionarioId) {
-                alert('Selecione um funcionário!');
-                return;
-            }
+            if (tipoUsuario !== 'funcionario') return;
             
+            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -423,10 +743,10 @@
             localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
             
             document.getElementById('msgPonto').innerHTML = 
-                '<div class="success">Pausa iniciada com sucesso!</div>';
+                '<div class="success">Pausa iniciada com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarRegistros();
+            carregarMeusRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -435,12 +755,9 @@
         
         // Marcar retorno da pausa
         function marcarRetorno() {
-            const funcionarioId = document.getElementById('funcionario').value;
-            if (!funcionarioId) {
-                alert('Selecione um funcionário!');
-                return;
-            }
+            if (tipoUsuario !== 'funcionario') return;
             
+            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -475,10 +792,10 @@
             localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
             
             document.getElementById('msgPonto').innerHTML = 
-                '<div class="success">Retorno da pausa registrado com sucesso!</div>';
+                '<div class="success">Retorno da pausa registrado com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarRegistros();
+            carregarMeusRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -487,12 +804,9 @@
         
         // Marcar saída
         function marcarSaida() {
-            const funcionarioId = document.getElementById('funcionario').value;
-            if (!funcionarioId) {
-                alert('Selecione um funcionário!');
-                return;
-            }
+            if (tipoUsuario !== 'funcionario') return;
             
+            const funcionarioId = usuarioLogado.id;
             const agora = new Date();
             const data = agora.toLocaleDateString('pt-BR');
             const hora = agora.toLocaleTimeString('pt-BR');
@@ -523,10 +837,10 @@
             localStorage.setItem('registrosPonto', JSON.stringify(registrosPonto));
             
             document.getElementById('msgPonto').innerHTML = 
-                '<div class="success">Saída registrada com sucesso!</div>';
+                '<div class="success">Saída registrada com sucesso às ' + hora + '!</div>';
             
             atualizarStatus();
-            carregarRegistros();
+            carregarMeusRegistros();
             
             setTimeout(() => {
                 document.getElementById('msgPonto').innerHTML = '';
@@ -539,8 +853,8 @@
             
             // Converter para minutos
             function timeToMinutes(timeStr) {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
+                const parts = timeStr.split(':');
+                return parseInt(parts[0]) * 60 + parseInt(parts[1]);
             }
             
             const entradaMin = timeToMinutes(entrada);
@@ -565,7 +879,7 @@
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
         }
         
-        // Carregar registros de ponto
+        // Carregar registros de ponto (para gestor)
         function carregarRegistros() {
             const tabela = document.getElementById('registrosPonto');
             const funcionarioId = document.getElementById('filtroFuncionario').value;
@@ -574,8 +888,8 @@
             // Converter data para formato pt-BR, se necessário
             let dataFiltroFormatada = '';
             if (dataFiltro) {
-                const [year, month, day] = dataFiltro.split('-');
-                dataFiltroFormatada = `${day}/${month}/${year}`;
+                const parts = dataFiltro.split('-');
+                dataFiltroFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
             }
             
             // Filtrar registros
@@ -641,26 +955,78 @@
             }
         }
         
-        // Inicializar a aplicação
-        function init() {
-            atualizarRelogio();
-            carregarFuncionarios();
-            carregarRegistros();
+        // Carregar meus registros (para funcionário)
+        function carregarMeusRegistros() {
+            if (tipoUsuario !== 'funcionario') return;
             
-            // Verificar se é um novo dia e mostrar lembretes de registros pendentes
-            const hoje = new Date().toLocaleDateString('pt-BR');
-            funcionarios.forEach(func => {
-                const registroHoje = registrosPonto.find(r => 
-                    r.funcionarioId === func.id && r.data === hoje);
-                
-                if (registroHoje && !registroHoje.saida) {
-                    console.log(`${func.nome} ainda não registrou saída hoje`);
+            const tabela = document.getElementById('meusRegistros');
+            const dataFiltro = document.getElementById('dataFiltroFunc').value;
+            const funcionarioId = usuarioLogado.id;
+            
+            // Converter data para formato pt-BR, se necessário
+            let dataFiltroFormatada = '';
+            if (dataFiltro) {
+                const parts = dataFiltro.split('-');
+                dataFiltroFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            
+            // Filtrar registros
+            let registrosFiltrados = registrosPonto.filter(r => r.funcionarioId === funcionarioId);
+            
+            if (dataFiltroFormatada) {
+                registrosFiltrados = registrosFiltrados.filter(r => r.data === dataFiltroFormatada);
+            }
+            
+            // Ordenar por data (mais recente primeiro)
+            registrosFiltrados.sort((a, b) => {
+                function toISODate(dateStr) {
+                    const [day, month, year] = dateStr.split('/');
+                    return `${year}-${month}-${day}`;
                 }
+                
+                return new Date(toISODate(b.data)) - new Date(toISODate(a.data));
             });
+            
+            // Limpar tabela
+            tabela.innerHTML = '';
+            
+            // Adicionar registros à tabela
+            registrosFiltrados.forEach(registro => {
+                // Formatar pausas
+                let pausasFormatadas = '-';
+                if (registro.pausas && registro.pausas.length > 0) {
+                    pausasFormatadas = registro.pausas.map(p => {
+                        if (p.inicio && p.fim) {
+                            return `${p.inicio}-${p.fim}`;
+                        } else if (p.inicio) {
+                            return `${p.inicio}-(em andamento)`;
+                        }
+                        return '';
+                    }).join('; ');
+                }
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${registro.data}</td>
+                    <td>${registro.entrada || '-'}</td>
+                    <td>${registro.saida || '-'}</td>
+                    <td>${pausasFormatadas}</td>
+                    <td>${calcularTempoTotal(registro.entrada, registro.saida, registro.pausas)}</td>
+                `;
+                
+                tabela.appendChild(tr);
+            });
+            
+            if (registrosFiltrados.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="5" style="text-align: center;">Nenhum registro encontrado</td>`;
+                tabela.appendChild(tr);
+            }
         }
         
         // Executar quando a página carregar
         window.onload = init;
+        document.getElementById('loginType').addEventListener('change', alternarCamposLogin);
     </script>
 </body>
 </html>
