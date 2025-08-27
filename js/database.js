@@ -1,16 +1,26 @@
-// Configuração do Firebase - SUBSTITUA com suas credenciais
+// Importar funções necessárias
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+
+// Configuração do Firebase
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_PROJETO.firebaseapp.com",
-    projectId: "SEU_PROJETO_ID",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
+  apiKey: "AIzaSyDb08uNQvXBoiTBt-qdHYEUgVv9woZxu0k",
+  authDomain: "liberdadenews-ee35e.firebaseapp.com",
+  projectId: "liberdadenews-ee35e",
+  storageBucket: "liberdadenews-ee35e.appspot.com",
+  messagingSenderId: "986630956093",
+  appId: "1:986630956093:web:03197b27c2b4a0a5777654",
+  measurementId: "G-WJSZZ7E8WY"
 };
 
 // Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);  // 🔹 Aqui você pega a referência do Firestore
+
+export { app, analytics, db };
+
 
 // Variáveis globais
 let funcionarios = [];
