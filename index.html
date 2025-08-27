@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Ponto LiberdadeNews</title>
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/style.css">
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ponto Eletrônico</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Sistema de Ponto com Firebase</h1>
-            <p class="subtitle">Dados salvos online - Acesse de qualquer lugar</p>
+            <h1>Sistema de Ponto Eletrônico</h1>
+            <p class="subtitle">Controle de ponto para sua empresa</p>
         </header>
         
         <div id="loginSection" class="login-section">
@@ -64,7 +58,7 @@
             
             <div class="dashboard">
                 <div class="card gestor">
-                    <h2><i>📋</i> Gerenciar Funcionários</h2>
+                    <h2>Gerenciar Funcionários</h2>
                     <div class="form-group">
                         <label for="nomeFuncionario">Nome do Funcionário:</label>
                         <input type="text" id="nomeFuncionario" placeholder="Digite o nome completo">
@@ -73,12 +67,12 @@
                         <label for="idFuncionario">ID do Funcionário:</label>
                         <input type="text" id="idFuncionario" placeholder="Digite um ID único">
                     </div>
-                    <button onclick="cadastrarFuncionario()">➕ Cadastrar Funcionário</button>
+                    <button onclick="cadastrarFuncionario()">Cadastrar Funcionário</button>
                     <div id="msgCadastro"></div>
                 </div>
                 
                 <div class="card">
-                    <h2><i>📊</i> Relatórios e Controle</h2>
+                    <h2>Relatórios e Controle</h2>
                     <p>Visualize todos os registros de ponto dos funcionários</p>
                     <div class="form-group">
                         <label for="filtroFuncionario">Filtrar por Funcionário:</label>
@@ -94,8 +88,7 @@
             </div>
             
             <div class="card">
-                <h2><i>📝</i> Todos os Registros de Ponto</h2>
-                <div id="loadingRegistros" class="hidden">Carregando... <span class="loading"></span></div>
+                <h2>Todos os Registros de Ponto</h2>
                 <table>
                     <thead>
                         <tr>
@@ -125,29 +118,29 @@
             
             <div class="dashboard">
                 <div class="card funcionario">
-                    <h2><i>⏱️</i> Marcar Ponto</h2>
+                    <h2>Marcar Ponto</h2>
                     <div class="current-time" id="currentTime"></div>
                     
                     <div id="status" class="status"></div>
                     
                     <div class="actions">
-                        <button onclick="marcarEntrada()" id="btnEntrada">✅ Registrar Entrada</button>
-                        <button onclick="marcarPausa()" id="btnPausa" class="pausa">⏸️ Iniciar Pausa</button>
-                        <button onclick="marcarRetorno()" id="btnRetorno" class="pausa">▶️ Retornar da Pausa</button>
-                        <button onclick="marcarSaida()" id="btnSaida" class="sair">🚪 Registrar Saída</button>
+                        <button onclick="marcarEntrada()" id="btnEntrada">Registrar Entrada</button>
+                        <button onclick="marcarPausa()" id="btnPausa" class="pausa">Iniciar Pausa</button>
+                        <button onclick="marcarRetorno()" id="btnRetorno" class="pausa">Retornar da Pausa</button>
+                        <button onclick="marcarSaida()" id="btnSaida" class="sair">Registrar Saída</button>
                     </div>
                     
                     <div id="msgPonto"></div>
                 </div>
                 
                 <div class="card">
-                    <h2><i>📊</i> Meus Registros</h2>
+                    <h2>Meus Registros</h2>
                     <p>Seus registros de ponto dos últimos dias</p>
                     <div class="form-group">
                         <label for="dataFiltroFunc">Filtrar por Data:</label>
                         <input type="date" id="dataFiltroFunc" onchange="carregarMeusRegistros()">
                     </div>
-                    <div id="loadingMeusRegistros" class="hidden">Carregando... <span class="loading"></span></div>
+                    
                     <table>
                         <thead>
                             <tr>
@@ -165,5 +158,15 @@
             </div>
         </div>
     </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Nossos scripts -->
+    <script src="js/database.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
