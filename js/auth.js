@@ -55,12 +55,31 @@ function entrarNoSistema() {
     
     if (tipoUsuario === 'gestor') {
         alternarVisibilidade('gestorArea', true);
-        carregarRegistros();
+        // ✅ CORREÇÃO: Substituir por função existente ou criar carregarRegistros()
+        carregarDados(); // Usando função que já existe no database.js
     } else {
         alternarVisibilidade('funcionarioArea', true);
         document.getElementById('nomeFuncionarioLogado').textContent = usuarioLogado.nome;
         atualizarStatus();
         carregarMeusRegistros();
+    }
+}
+
+// ✅ ADICIONAR ESTA FUNÇÃO (se precisar de uma função específica para registros)
+async function carregarRegistros() {
+    try {
+        console.log("Carregando registros de ponto...");
+        // Implementar lógica para carregar e exibir registros
+        // Exemplo:
+        const registrosSnapshot = await db.collection("registrosPonto").get();
+        const registros = registrosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log("Registros carregados:", registros);
+        
+        // Aqui você pode adicionar a lógica para exibir os registros na tabela
+        return registros;
+    } catch (error) {
+        console.error("Erro ao carregar registros:", error);
+        return [];
     }
 }
 
